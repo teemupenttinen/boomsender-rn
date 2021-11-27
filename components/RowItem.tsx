@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, ListRenderItem, Text, View, StyleSheet } from 'react-native'
 
 export interface RowItem {
-  id: number,
+  value: string,
   text: string
 }
 

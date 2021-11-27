@@ -1,29 +1,65 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { Button } from '../components/Button'
-import { TextField } from '../components/TextField'
+import { ListWithLabel } from '../components/ListWithLabel'
+import { SegmentedControl } from '../components/SegmentedControl'
 import { TextFieldWithLabel } from '../components/TextFieldWithLabel'
 import { useApp } from '../contexts/appContext'
+import {
+  Command,
+  ControlMethod,
+  Device as DeviceInterface,
+} from '../types/device'
+import { DeviceProps } from './Home'
 
-export const Device: React.FC = () => {
+const CONTROL_METHODS: ControlMethod[] = ['TCP', 'UDP']
+
+export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
   const [name, setName] = useState('')
+  const [controlMethod, setControlMethod] = useState<ControlMethod>('TCP')
+  const [commands, setCommands] = useState<Command[]>([])
+
+  useEffect(() => {
+    if (route.params?.newCommand) {
+      console.log('Add command')
+      setCommands([...commands, route.params.newCommand])
+    }
+  }, [route])
+
   const { addNewDevice } = useApp()
+
+  const addNewDeviceHandler = () => {
+    const newDevice: DeviceInterface = {
+      id: 0,
+      name,
+      controlMethod,
+      commands,
+    }
+    addNewDevice(newDevice)
+    navigation.navigate('Main')
+  }
 
   return (
     <View style={styles.device}>
       <TextFieldWithLabel label="Name" onChangeText={setName} />
+      <Text style={styles.controlMethodText}>Control method</Text>
+      <SegmentedControl
+        options={CONTROL_METHODS.map((c) => ({ value: c, name: c }))}
+        active={controlMethod}
+        onChange={(newValue) => setControlMethod(newValue as ControlMethod)}
+      />
       <TextFieldWithLabel
         containerStyle={styles.portContainer}
         label="Port"
         onChangeText={setName}
       />
+      <ListWithLabel
+        data={commands.map((c) => ({ value: c.name, text: c.name }))}
+        onAdd={() => navigation.navigate('Command')}
+      />
 
       <View style={styles.buttonContainer}>
-        <Button
-          color="#B88B4A"
-          title="Add"
-          onPress={() => addNewDevice(name)}
-        />
+        <Button color="#B88B4A" title="Add" onPress={addNewDeviceHandler} />
       </View>
     </View>
   )
@@ -31,46 +67,24 @@ export const Device: React.FC = () => {
 
 const styles = StyleSheet.create({
   device: {
-    padding: 8,
+    padding: 16,
     height: '100%',
   },
   buttonContainer: {
+    flex: 1,
     alignItems: 'center',
     marginTop: 16,
+    alignContent: 'flex-end',
+    justifyContent: 'flex-end',
+  },
+  controlMethodText: {
+    color: 'white',
+    fontSize: 24,
+    marginTop: 14,
+    marginBottom: 14,
   },
   portContainer: {
     marginTop: 16,
-  },
-  listLabelContainer: {
-    flexDirection: 'row',
-    // paddingLeft: 8,
-    paddingRight: 24,
-  },
-  listLabel: {
-    color: 'white',
-    flexBasis: 0,
-    flexGrow: 1,
-    fontSize: 24,
-    lineHeight: 32,
-  },
-  listAction: {
-    color: 'white',
-    fontSize: 32,
-    lineHeight: 32,
-  },
-  list: {
-    paddingTop: 8,
-  },
-  middleLabel: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    opacity: 0.5,
-    zIndex: -1,
+    marginBottom: 16,
   },
 })

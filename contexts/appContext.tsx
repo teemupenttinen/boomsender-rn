@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { Device } from '../types/device'
 
 interface AppContextValues {
   devices: Device[]
-  addNewDevice: (name: string) => void
+  addNewDevice: (newDevice: Device) => void
 }
 
 const AppContext = React.createContext<AppContextValues>({
@@ -14,11 +15,18 @@ export const AppContextProvider: React.FC = ({ children }) => {
   const [devices, setDevices] = useState<Device[]>([])
 
   useEffect(() => {
-    setDevices([{ id: 1, name: 'TV1' }])
+    setDevices([
+      {
+        id: 1,
+        name: 'TV1',
+        controlMethod: 'UDP',
+        commands: [{ name: 'CMD 1', command: '123' }],
+      },
+    ])
   }, [])
 
-  const addNewDevice = (name: string) => {
-    setDevices([...devices, { id: Math.floor(Math.random() * 100), name }])
+  const addNewDevice = (newDevice: Device) => {
+    setDevices([...devices, newDevice])
   }
 
   return (
