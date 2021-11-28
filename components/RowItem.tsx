@@ -7,6 +7,7 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu'
+import { colors } from '../styles/colors'
 
 export interface RowItem {
   value: string
@@ -18,29 +19,26 @@ export interface RowItem {
 
 export const RowItem: ListRenderItem<RowItem> = ({ item }) => (
   <View style={styles.rowItem}>
-    <TouchableOpacity containerStyle={styles.rowLabel} onPress={item.onRowPress}>
+    <TouchableOpacity
+      containerStyle={styles.rowLabel}
+      onPress={item.onRowPress}
+    >
       <Text style={styles.text}>{item.text}</Text>
     </TouchableOpacity>
     <Menu>
       <MenuTrigger>
         <TouchableOpacity style={styles.button}>
-          <Text style={{ color: 'black' }}>?</Text>
+          <Text style={styles.buttonText}>?</Text>
         </TouchableOpacity>
       </MenuTrigger>
-      <MenuOptions optionsContainerStyle={{ borderRadius: 8 }}>
+      <MenuOptions optionsContainerStyle={styles.menuOptionsContainer}>
         <MenuOption
-          style={[
-            {
-              borderBottomWidth: 1,
-              borderBottomColor: '#afafaf',
-            },
-            styles.menuItemContainer,
-          ]}
+          style={styles.menuItemContainer}
           onSelect={item.onEdit}
           text="Edit"
         />
         <MenuOption style={styles.menuItemContainer} onSelect={item.onDelete}>
-          <Text style={{ color: 'red' }}>Delete</Text>
+          <Text style={styles.menuItemContainerText}>Delete</Text>
         </MenuOption>
       </MenuOptions>
     </Menu>
@@ -53,20 +51,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 8,
     paddingRight: 8,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: colors.primaryBackground,
     height: 60,
-    borderBottomColor: '#3992EE',
+    borderBottomColor: colors.borderLineColor,
     borderBottomWidth: 1,
   },
   text: {
-    color: 'black',
+    color: colors.black,
     fontSize: 20,
   },
   rowLabel: {
     flexBasis: 0,
     flexGrow: 1,
     height: '100%',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   button: {
     height: 30,
@@ -76,9 +74,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonText: { color: colors.black },
   menuItemContainer: {
     height: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLineColor,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  menuItemContainerText: {
+    color: colors.red,
+  },
+  menuOptionsContainer: { borderRadius: 8 },
 })

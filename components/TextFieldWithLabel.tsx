@@ -7,6 +7,7 @@ import {
   ViewStyle,
   KeyboardTypeOptions,
 } from 'react-native'
+import { colors } from '../styles/colors'
 import { TextField } from './TextField'
 
 interface TextFieldWithLabelProps {
@@ -38,7 +39,7 @@ export const TextFieldWithLabel: React.FC<TextFieldWithLabelProps> = ({
 
 const styles = StyleSheet.create({
   label: {
-    color: 'white',
+    color: colors.white,
     fontSize: 24,
     marginBottom: 14,
   },

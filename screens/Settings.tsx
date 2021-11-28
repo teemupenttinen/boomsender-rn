@@ -7,6 +7,7 @@ import { RouteProp } from '@react-navigation/native'
 import { useApp } from '../contexts/appContext'
 import { TextFieldWithLabel } from '../components/TextFieldWithLabel'
 import { Button } from '../components/Button'
+import { layout } from '../styles/layout'
 
 type AddType = 'IP' | 'PORT'
 
@@ -43,7 +44,7 @@ const AddScreen: React.FC<AddScreenProps> = ({ route, navigation }) => {
 
   const label = route.params.type === 'IP' ? 'IP address' : 'Port'
   return (
-    <View style={{ padding: 16 }}>
+    <View style={layout.viewPadding}>
       <TextFieldWithLabel
         label={label}
         value={value}
@@ -60,7 +61,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const { ipAddresses, ports } = useApp()
 
   return (
-    <View style={{ padding: 16 }}>
+    <View style={layout.viewPadding}>
       <ListWithLabel
         data={ipAddresses.map((ip) => {
           return {
@@ -72,7 +73,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
         label="Ip Addresses"
       ></ListWithLabel>
       <ListWithLabel
-        containerStyle={{ marginTop: 16 }}
+        containerStyle={layout.gap}
         data={ports.map((port) => ({
           text: port.toString(),
           value: port.toString(),
@@ -123,11 +124,6 @@ const getHeaderTitle = (
 }
 
 const styles = StyleSheet.create({
-  label: {
-    color: 'white',
-    fontSize: 24,
-    marginBottom: 14,
-  },
   buttonContainer: {
     flex: 1,
     alignItems: 'center',

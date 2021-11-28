@@ -7,6 +7,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native'
+import { colors } from '../styles/colors'
 import { RowItem } from './RowItem'
 
 interface ListWithLabelProps {
@@ -46,14 +47,14 @@ const styles = StyleSheet.create({
     paddingRight: 14,
   },
   listLabel: {
-    color: 'white',
+    color: colors.white,
     flexBasis: 0,
     flexGrow: 1,
     fontSize: 24,
     lineHeight: 32,
   },
   listAction: {
-    color: 'white',
+    color: colors.white,
     fontSize: 32,
     lineHeight: 32,
   },
