@@ -1,12 +1,25 @@
 import React from 'react'
-import { StyleSheet, TextInput } from 'react-native'
+import { KeyboardTypeOptions, StyleSheet, TextInput } from 'react-native'
 
 interface TextFieldProps {
+  value: string
   onChangeText: (text: string) => void
+  keyboardType?: KeyboardTypeOptions
 }
 
-export const TextField: React.FC<TextFieldProps> = ({ onChangeText }) => {
-  return <TextInput onChangeText={onChangeText} style={styles.field} />
+export const TextField: React.FC<TextFieldProps> = ({
+  value,
+  onChangeText,
+  keyboardType,
+}) => {
+  return (
+    <TextInput
+      value={value}
+      onChangeText={onChangeText}
+      style={styles.field}
+      keyboardType={keyboardType}
+    />
+  )
 }
 
 const styles = StyleSheet.create({

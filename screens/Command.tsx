@@ -14,8 +14,12 @@ export const Command: React.FC<CommandProps> = ({ navigation }) => {
 
   return (
     <View>
-      <TextFieldWithLabel label="Name" onChangeText={setName} />
-      <TextFieldWithLabel label="Command" onChangeText={setCommand} />
+      <TextFieldWithLabel value={name} label="Name" onChangeText={setName} />
+      <TextFieldWithLabel
+        value={command}
+        label="Command"
+        onChangeText={setCommand}
+      />
       <View>
         <Button color="#B88B4A" title="Add" onPress={addNewCommandHandler} />
       </View>

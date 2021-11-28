@@ -1,10 +1,7 @@
 import React from 'react'
-import {
-  NavigationContainer,
-  ParamListBase,
-  RouteProp,
-  Theme,
-} from '@react-navigation/native'
+import { NavigationContainer, Theme } from '@react-navigation/native'
+import { MenuProvider } from 'react-native-popup-menu'
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Home } from './screens/Home'
 import { Settings } from './screens/Settings'
@@ -25,17 +22,20 @@ const defaultTheme: Theme = {
 }
 export default function App() {
   return (
-    <AppContextProvider>
-      <NavigationContainer theme={defaultTheme}>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            headerShown: route.name === 'Home' ? false : true,
-          })}
-        >
-          <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="Settings" component={Settings} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </AppContextProvider>
+    <MenuProvider>
+      <AppContextProvider>
+        <NavigationContainer theme={defaultTheme}>
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              headerShown: false,
+              headerTransparent: true,
+            })}
+          >
+            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="Settings" component={Settings} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </AppContextProvider>
+    </MenuProvider>
   )
 }

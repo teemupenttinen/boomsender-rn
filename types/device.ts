@@ -10,4 +10,5 @@ export interface Device {
   name: string
   controlMethod: ControlMethod
   commands: Command[]
+  port: number
 }

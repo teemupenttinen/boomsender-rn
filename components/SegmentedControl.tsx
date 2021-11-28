@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, StyleProp, ViewStyle } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 export interface SegmentedControlOption {
@@ -11,15 +11,17 @@ interface SegmentedControlProps {
   options: SegmentedControlOption[]
   active: string
   onChange: (value: string) => void
+  containerStyle?: StyleProp<ViewStyle>
 }
 
 export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   options,
   active,
   onChange,
+  containerStyle,
 }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       {options.map((option) => {
         return (
           <View

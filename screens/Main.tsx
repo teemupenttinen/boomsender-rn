@@ -1,34 +1,32 @@
 import 'react-native-gesture-handler'
 import React from 'react'
-import { FlatList, View, Text, StyleSheet } from 'react-native'
-import { RowItem } from '../components/RowItem'
+import { View, Text, StyleSheet } from 'react-native'
 import { useApp } from '../contexts/appContext'
 import { MainProps } from './Home'
+import { ListWithLabel } from '../components/ListWithLabel'
 
 export const Main = ({ navigation }: MainProps) => {
-  const { devices } = useApp()
-
-  const transformedDevices: RowItem[] = devices.map((d) => ({
-    id: d.id,
-    text: d.name,
-  }))
-
-  const addNewDevice = () => {
-    navigation.navigate("Device")
-  }
+  const { devices, removeDevice } = useApp()
 
   return (
     <View style={styles.main}>
-      <View style={styles.listLabelContainer}>
-        <Text style={styles.listLabel}>Devices</Text>
-        <Text style={styles.listAction} onPress={addNewDevice}>
-          +
-        </Text>
-      </View>
-      <FlatList
-        style={styles.list}
-        data={transformedDevices}
-        renderItem={RowItem}
+      <ListWithLabel
+        label="Devices"
+        containerStyle={styles.list}
+        data={devices.map((d) => ({
+          value: d.id.toString(),
+          text: d.name,
+          onDelete: () => {
+            removeDevice(d.id)
+          },
+          onEdit: () => {
+            navigation.navigate('Device', { device: d })
+          },
+          onRowPress: () => {
+            navigation.navigate('Control', { device: d })
+          },
+        }))}
+        onAdd={() => navigation.navigate('Device', {})}
       />
       <View style={styles.middleLabel}>
         <Text style={{ color: 'white', fontSize: 24 }}>
@@ -43,23 +41,6 @@ const styles = StyleSheet.create({
   main: {
     padding: 8,
     height: '100%',
-  },
-  listLabelContainer: {
-    flexDirection: 'row',
-    // paddingLeft: 8,
-    paddingRight: 24,
-  },
-  listLabel: {
-    color: 'white',
-    flexBasis: 0,
-    flexGrow: 1,
-    fontSize: 24,
-    lineHeight: 32,
-  },
-  listAction: {
-    color: 'white',
-    fontSize: 32,
-    lineHeight: 32,
   },
   list: {
     paddingTop: 8,

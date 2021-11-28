@@ -15,33 +15,53 @@ import { DeviceProps } from './Home'
 const CONTROL_METHODS: ControlMethod[] = ['TCP', 'UDP']
 
 export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
+  const [id, setId] = useState<number | undefined>()
   const [name, setName] = useState('')
   const [controlMethod, setControlMethod] = useState<ControlMethod>('TCP')
   const [commands, setCommands] = useState<Command[]>([])
+  const [port, setPort] = useState(10000)
 
   useEffect(() => {
     if (route.params?.newCommand) {
-      console.log('Add command')
       setCommands([...commands, route.params.newCommand])
+    }
+
+    if (route.params?.device) {
+      const device = route.params.device
+      setId(device.id)
+      setName(device.name)
+      setControlMethod(device.controlMethod)
+      setCommands(device.commands)
     }
   }, [route])
 
-  const { addNewDevice } = useApp()
+  const { addNewDevice, editDevice } = useApp()
 
   const addNewDeviceHandler = () => {
     const newDevice: DeviceInterface = {
-      id: 0,
+      id: id ?? 0,
       name,
       controlMethod,
       commands,
+      port,
     }
-    addNewDevice(newDevice)
+
+    if (id) {
+      editDevice(newDevice)
+    } else {
+      addNewDevice(newDevice)
+    }
+    setId(undefined)
+    setName('')
+    setControlMethod('TCP')
+    setCommands([])
+    setPort(10000)
     navigation.navigate('Main')
   }
 
   return (
     <View style={styles.device}>
-      <TextFieldWithLabel label="Name" onChangeText={setName} />
+      <TextFieldWithLabel value={name} label="Name" onChangeText={setName} />
       <Text style={styles.controlMethodText}>Control method</Text>
       <SegmentedControl
         options={CONTROL_METHODS.map((c) => ({ value: c, name: c }))}
@@ -49,17 +69,30 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
         onChange={(newValue) => setControlMethod(newValue as ControlMethod)}
       />
       <TextFieldWithLabel
+        value={port.toString()}
         containerStyle={styles.portContainer}
         label="Port"
-        onChangeText={setName}
+        onChangeText={(text) => setPort(parseInt(text))}
+        keyboardType={'numeric'}
       />
       <ListWithLabel
-        data={commands.map((c) => ({ value: c.name, text: c.name }))}
+        label="Commands"
+        data={commands.map((c) => ({
+          value: c.name,
+          text: c.name,
+          onDelete: () => {},
+          onEdit: () => {},
+        }))}
         onAdd={() => navigation.navigate('Command')}
+        containerStyle={{ marginTop: 32 }}
       />
 
       <View style={styles.buttonContainer}>
-        <Button color="#B88B4A" title="Add" onPress={addNewDeviceHandler} />
+        <Button
+          color="#B88B4A"
+          title={id ? 'Save' : 'Add'}
+          onPress={addNewDeviceHandler}
+        />
       </View>
     </View>
   )
@@ -80,11 +113,11 @@ const styles = StyleSheet.create({
   controlMethodText: {
     color: 'white',
     fontSize: 24,
-    marginTop: 14,
+    marginTop: 32,
     marginBottom: 14,
   },
   portContainer: {
-    marginTop: 16,
+    marginTop: 32,
     marginBottom: 16,
   },
 })

@@ -1,25 +1,41 @@
 import React from 'react'
-import { View, StyleSheet, Text, FlatList, ListRenderItem } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  StyleProp,
+  ViewStyle,
+} from 'react-native'
 import { RowItem } from './RowItem'
 
 interface ListWithLabelProps {
   data: RowItem[]
   onAdd: () => void
+  containerStyle?: StyleProp<ViewStyle>
+  label: string
 }
 
 export const ListWithLabel: React.FC<ListWithLabelProps> = ({
   data,
   onAdd,
+  containerStyle,
+  label,
 }) => {
   return (
-    <View>
+    <View style={containerStyle}>
       <View style={styles.listLabelContainer}>
-        <Text style={styles.listLabel}>Devices</Text>
+        <Text style={styles.listLabel}>{label}</Text>
         <Text style={styles.listAction} onPress={onAdd}>
           +
         </Text>
       </View>
-      <FlatList style={styles.list} data={data} renderItem={RowItem} />
+      <FlatList
+        style={styles.list}
+        data={data}
+        renderItem={RowItem}
+        keyExtractor={(item) => item.value}
+      />
     </View>
   )
 }
@@ -27,7 +43,7 @@ export const ListWithLabel: React.FC<ListWithLabelProps> = ({
 const styles = StyleSheet.create({
   listLabelContainer: {
     flexDirection: 'row',
-    paddingRight: 24,
+    paddingRight: 14,
   },
   listLabel: {
     color: 'white',
