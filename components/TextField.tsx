@@ -1,5 +1,6 @@
 import React from 'react'
 import { KeyboardTypeOptions, StyleSheet, TextInput } from 'react-native'
+import { colors } from '../styles/colors'
 
 interface TextFieldProps {
   value: string
@@ -25,7 +26,7 @@ export const TextField: React.FC<TextFieldProps> = ({
 const styles = StyleSheet.create({
   field: {
     borderRadius: 8,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: colors.primaryBackground,
     padding: 5,
     height: 50,
   },

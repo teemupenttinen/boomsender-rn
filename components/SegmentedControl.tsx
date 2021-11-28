@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, View, StyleSheet, StyleProp, ViewStyle } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import { colors } from '../styles/colors'
 
 export interface SegmentedControlOption {
   value: string
@@ -29,12 +30,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
           >
             <TouchableOpacity
               onPress={() => onChange(option.value)}
-              containerStyle={{
-                width: '100%',
-                height: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              containerStyle={styles.optionButton}
             >
               <Text style={styles.text}>{option.name}</Text>
             </TouchableOpacity>
@@ -49,7 +45,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     height: 50,
-    backgroundColor: '#4f4d65',
+    backgroundColor: colors.secondaryBackground,
     justifyContent: 'center',
     alignContent: 'stretch',
     alignItems: 'stretch',
@@ -63,7 +59,13 @@ const styles = StyleSheet.create({
     borderRadius: 7,
   },
   active: {
-    backgroundColor: '#fafafa',
+    backgroundColor: colors.primaryBackground,
+  },
+  optionButton: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     width: '100%',

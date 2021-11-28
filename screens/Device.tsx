@@ -5,6 +5,7 @@ import { ListWithLabel } from '../components/ListWithLabel'
 import { SegmentedControl } from '../components/SegmentedControl'
 import { TextFieldWithLabel } from '../components/TextFieldWithLabel'
 import { useApp } from '../contexts/appContext'
+import { colors } from '../styles/colors'
 import {
   Command,
   ControlMethod,
@@ -84,7 +85,7 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
           onEdit: () => {},
         }))}
         onAdd={() => navigation.navigate('Command')}
-        containerStyle={{ marginTop: 32 }}
+        containerStyle={styles.commandsList}
       />
 
       <View style={styles.buttonContainer}>
@@ -110,8 +111,11 @@ const styles = StyleSheet.create({
     alignContent: 'flex-end',
     justifyContent: 'flex-end',
   },
+  commandsList: {
+    marginTop: 32,
+  },
   controlMethodText: {
-    color: 'white',
+    color: colors.white,
     fontSize: 24,
     marginTop: 32,
     marginBottom: 14,

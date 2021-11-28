@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, Switch, Text, View } from 'react-native'
 import { Button } from '../components/Button'
 import { useApp } from '../contexts/appContext'
+import { colors } from '../styles/colors'
 import { ControlProps } from './Home'
 
 export const Control: React.FC<ControlProps> = ({ route }) => {
@@ -39,7 +40,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
           <Picker.Item label={ip} value={ip} />
         ))}
       </Picker>
-      <Text style={[styles.label, { marginTop: 16 }]}>Port</Text>
+      <Text style={[styles.label, styles.gap]}>Port</Text>
       <Picker
         style={styles.dropdown}
         selectedValue={port}
@@ -49,7 +50,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
           <Picker.Item label={p.toString()} value={p} />
         ))}
       </Picker>
-      <Text style={[styles.label, { marginTop: 16 }]}>Command</Text>
+      <Text style={[styles.label, styles.gap]}>Command</Text>
       <Picker
         style={styles.dropdown}
         selectedValue={command}
@@ -59,7 +60,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
           <Picker.Item label={c.name} value={c} />
         ))}
       </Picker>
-      <Text style={[styles.label, { marginTop: 16 }]}>Response</Text>
+      <Text style={[styles.label, styles.gap]}>Response</Text>
       <View style={styles.responseContainer}>
         <Text>power\x0a</Text>
       </View>
@@ -95,9 +96,12 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   label: {
-    color: 'white',
+    color: colors.white,
     fontSize: 24,
     marginBottom: 14,
+  },
+  gap: {
+    marginTop: 16,
   },
   dropdown: {
     borderRadius: 8,
@@ -105,7 +109,7 @@ const styles = StyleSheet.create({
   },
   responseContainer: {
     flex: 2,
-    backgroundColor: '#fafafa',
+    backgroundColor: colors.primaryBackground,
     borderRadius: 8,
     padding: 8,
   },

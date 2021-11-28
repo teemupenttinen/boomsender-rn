@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import { useApp } from '../contexts/appContext'
 import { MainProps } from './Home'
 import { ListWithLabel } from '../components/ListWithLabel'
+import { colors } from '../styles/colors'
 
 export const Main = ({ navigation }: MainProps) => {
   const { devices, removeDevice } = useApp()
@@ -29,7 +30,7 @@ export const Main = ({ navigation }: MainProps) => {
         onAdd={() => navigation.navigate('Device', {})}
       />
       <View style={styles.middleLabel}>
-        <Text style={{ color: 'white', fontSize: 24 }}>
+        <Text style={styles.middleLabelText}>
           This space is reserved for your devices!
         </Text>
       </View>
@@ -57,4 +58,5 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     zIndex: -1,
   },
+  middleLabelText: { color: colors.white, fontSize: 24 },
 })

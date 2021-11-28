@@ -1,9 +1,6 @@
 import React from 'react'
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-} from 'react-native'
+import { TouchableOpacity, Text, StyleSheet } from 'react-native'
+import { colors } from '../styles/colors'
 
 interface ButtonProps {
   title: string
@@ -13,28 +10,25 @@ interface ButtonProps {
 
 export const Button: React.FC<ButtonProps> = ({ title, color, onPress }) => {
   return (
-    <TouchableOpacity style={buttonStyle(color).style} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: color }]}
+      onPress={onPress}
+    >
       <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   )
 }
 
-const buttonStyle = (color: string) => {
-  return StyleSheet.create({
-    style: {
-      width: 300,
-      height: 60,
-      backgroundColor: color,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 8
-    },
-  })
-}
-
 const styles = StyleSheet.create({
   text: {
     fontSize: 24,
-    color: 'white',
+    color: colors.white,
+  },
+  button: {
+    width: 300,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
   },
 })
