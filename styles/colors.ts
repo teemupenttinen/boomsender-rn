@@ -5,5 +5,5 @@ export const colors = {
   white: 'white',
   black: 'black',
   red: 'red',
-  button: '',
+  button: '#B88B4A',
 }

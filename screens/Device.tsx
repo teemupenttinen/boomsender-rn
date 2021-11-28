@@ -90,7 +90,7 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
 
       <View style={styles.buttonContainer}>
         <Button
-          color="#B88B4A"
+          color={colors.button}
           title={id ? 'Save' : 'Add'}
           onPress={addNewDeviceHandler}
         />

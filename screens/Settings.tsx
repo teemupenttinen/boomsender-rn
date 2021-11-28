@@ -8,6 +8,7 @@ import { useApp } from '../contexts/appContext'
 import { TextFieldWithLabel } from '../components/TextFieldWithLabel'
 import { Button } from '../components/Button'
 import { layout } from '../styles/layout'
+import { colors } from '../styles/colors'
 
 type AddType = 'IP' | 'PORT'
 
@@ -51,7 +52,7 @@ const AddScreen: React.FC<AddScreenProps> = ({ route, navigation }) => {
         onChangeText={(text) => setValue(text)}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Add" color="#B88B4A" onPress={addHandler} />
+        <Button title="Add" color={colors.button} onPress={addHandler} />
       </View>
     </View>
   )

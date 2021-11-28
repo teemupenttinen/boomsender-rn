@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { View } from 'react-native'
 import { Button } from '../components/Button'
 import { TextFieldWithLabel } from '../components/TextFieldWithLabel'
+import { colors } from '../styles/colors'
 import { CommandProps } from './Home'
 
 export const Command: React.FC<CommandProps> = ({ navigation }) => {
@@ -21,7 +22,7 @@ export const Command: React.FC<CommandProps> = ({ navigation }) => {
         onChangeText={setCommand}
       />
       <View>
-        <Button color="#B88B4A" title="Add" onPress={addNewCommandHandler} />
+        <Button color={colors.button} title="Add" onPress={addNewCommandHandler} />
       </View>
     </View>
   )

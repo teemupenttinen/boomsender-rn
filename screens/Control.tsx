@@ -80,7 +80,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
       <View style={styles.buttonContainer}>
         <Button
           title="Send"
-          color="#B88B4A"
+          color={colors.button}
           onPress={function (): void {
             throw new Error('Function not implemented.')
           }}
