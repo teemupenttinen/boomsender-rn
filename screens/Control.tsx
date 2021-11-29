@@ -5,11 +5,12 @@ import { Button } from '../components/Button'
 import { useApp } from '../contexts/appContext'
 import { colors } from '../styles/colors'
 import { ControlProps } from './Home'
+import tcpSocket from 'react-native-tcp-socket'
 
 export const Control: React.FC<ControlProps> = ({ route }) => {
   const { ipAddresses, ports } = useApp()
   const [ipAddress, setIpAddress] = useState('')
-  const [port, setPort] = useState<number | undefined>()
+  const [port, setPort] = useState<number>(8080)
   const [command, setCommand] = useState('')
   const [connAlive, setConnAlive] = useState(false)
 
@@ -20,6 +21,20 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   }, [route])
 
   const device = route.params?.device
+
+  const sendCommand = () => {
+    if (route.params?.device.controlMethod === 'TCP') {
+      const sock = tcpSocket.createConnection(
+        { localAddress: ipAddress, port: port },
+        () => {
+          console.log(sock)
+          if (sock) {
+            sock.write(command)
+          }
+        }
+      )
+    }
+  }
 
   if (!device) {
     return (
@@ -78,13 +93,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         </View>
       )}
       <View style={styles.buttonContainer}>
-        <Button
-          title="Send"
-          color={colors.button}
-          onPress={function (): void {
-            throw new Error('Function not implemented.')
-          }}
-        />
+        <Button title="Send" color={colors.button} onPress={sendCommand} />
       </View>
     </View>
   )

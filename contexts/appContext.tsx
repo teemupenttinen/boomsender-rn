@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Device } from '../types/device'
+import { Command, Device } from '../types/device'
+import tcpSocket from 'net'
 
 interface AppContextValues {
   devices: Device[]
@@ -29,15 +30,15 @@ const AppContext = React.createContext<AppContextValues>({
 
 export const AppContextProvider: React.FC = ({ children }) => {
   const [devices, setDevices] = useState<Device[]>([])
-  const [ipAddresses, setIpAddreses] = useState<string[]>(['192.168.1.12'])
-  const [ports, setPorts] = useState<number[]>([1294, 1259])
+  const [ipAddresses, setIpAddreses] = useState<string[]>(['127.0.0.1'])
+  const [ports, setPorts] = useState<number[]>([8080, 1259])
 
   useEffect(() => {
     setDevices([
       {
         id: 1,
         name: 'TV1',
-        controlMethod: 'UDP',
+        controlMethod: 'TCP',
         commands: [
           { name: 'Power On', command: '123' },
           { name: 'Power Off', command: '123' },
