@@ -40,8 +40,8 @@ export const AppContextProvider: React.FC = ({ children }) => {
         name: 'TV1',
         controlMethod: 'TCP',
         commands: [
-          { name: 'Power On', command: '123' },
-          { name: 'Power Off', command: '123' },
+          { name: 'Power On', command: 'poweron\x0a' },
+          { name: 'Power Off', command: 'poweroff\x0a' },
         ],
         port: 1337,
       },
