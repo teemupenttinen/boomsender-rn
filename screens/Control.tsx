@@ -1,22 +1,48 @@
-import { Picker } from '@react-native-picker/picker'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Switch, Text, View } from 'react-native'
 import { Button } from '../components/Button'
 import { useApp } from '../contexts/appContext'
 import { colors } from '../styles/colors'
 import { ControlProps } from './Home'
+import DropDownPicker from 'react-native-dropdown-picker'
 import tcpSocket from 'react-native-tcp-socket'
 
 export const Control: React.FC<ControlProps> = ({ route }) => {
-  const { ipAddresses, ports } = useApp()
+  const [openIpDropdown, setOpenIpDropdown] = useState(false)
+  const [openPortDropdown, setOpenPortDropdown] = useState(false)
+  const [openCommandDropdown, setOpenCommandDropdown] = useState(false)
   const [ipAddress, setIpAddress] = useState('')
   const [port, setPort] = useState<number>(8080)
   const [command, setCommand] = useState('')
   const [connAlive, setConnAlive] = useState(false)
 
+  const { ipAddresses, ports } = useApp()
+
+  useEffect(() => {
+    if (openIpDropdown) {
+      setOpenPortDropdown(false)
+      setOpenCommandDropdown(false)
+    }
+  }, [openIpDropdown])
+
+  useEffect(() => {
+    if (openPortDropdown) {
+      setOpenIpDropdown(false)
+      setOpenCommandDropdown(false)
+    }
+  }, [openPortDropdown])
+
+  useEffect(() => {
+    if (openCommandDropdown) {
+      setOpenIpDropdown(false)
+      setOpenPortDropdown(false)
+    }
+  }, [openCommandDropdown])
+
   useEffect(() => {
     if (route.params?.device) {
       setPort(route.params.device.port)
+      setCommand(route.params.device.commands[0].command)
     }
   }, [route])
 
@@ -25,11 +51,11 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const sendCommand = () => {
     if (route.params?.device.controlMethod === 'TCP') {
       const sock = tcpSocket.createConnection(
-        { localAddress: ipAddress, port: port },
+        { localAddress: 'localhost', port: port },
         () => {
-          console.log(sock)
           if (sock) {
             sock.write(command)
+            sock.destroy()
           }
         }
       )
@@ -43,38 +69,45 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
       </View>
     )
   }
+
   return (
     <View style={styles.control}>
-      <Text style={styles.label}>IP Address</Text>
-      <Picker
-        style={styles.dropdown}
-        selectedValue={ipAddress}
-        onValueChange={(value) => setIpAddress(value)}
-      >
-        {ipAddresses.map((ip) => (
-          <Picker.Item label={ip} value={ip} />
-        ))}
-      </Picker>
-      <Text style={[styles.label, styles.gap]}>Port</Text>
-      <Picker
-        style={styles.dropdown}
-        selectedValue={port}
-        onValueChange={(value) => setPort(value)}
-      >
-        {[device.port, ...ports].map((p) => (
-          <Picker.Item label={p.toString()} value={p} />
-        ))}
-      </Picker>
-      <Text style={[styles.label, styles.gap]}>Command</Text>
-      <Picker
-        style={styles.dropdown}
-        selectedValue={command}
-        onValueChange={(value) => setCommand(value)}
-      >
-        {device.commands.map((c) => (
-          <Picker.Item label={c.name} value={c} />
-        ))}
-      </Picker>
+      <View style={styles.ipDropdown}>
+        <Text style={styles.label}>IP Address</Text>
+        <DropDownPicker
+          open={openIpDropdown}
+          value={ipAddress}
+          items={ipAddresses.map((ip) => ({ value: ip, label: ip }))}
+          setOpen={setOpenIpDropdown}
+          setValue={setIpAddress}
+        />
+      </View>
+      <View style={styles.portDropdown}>
+        <Text style={[styles.label, styles.gap]}>Port</Text>
+        <DropDownPicker
+          open={openPortDropdown}
+          value={port}
+          items={ports.map((p) => ({
+            value: p.toString(),
+            label: p.toString(),
+          }))}
+          setOpen={setOpenPortDropdown}
+          setValue={setPort}
+        />
+      </View>
+      <View style={styles.commandDropdown}>
+        <Text style={[styles.label, styles.gap]}>Command</Text>
+        <DropDownPicker
+          open={openCommandDropdown}
+          value={command}
+          items={device.commands.map((c) => ({
+            value: c.command,
+            label: c.name,
+          }))}
+          setOpen={setOpenCommandDropdown}
+          setValue={setCommand}
+        />
+      </View>
       <Text style={[styles.label, styles.gap]}>Response</Text>
       <View style={styles.responseContainer}>
         <Text>power\x0a</Text>
@@ -112,9 +145,14 @@ const styles = StyleSheet.create({
   gap: {
     marginTop: 16,
   },
-  dropdown: {
-    borderRadius: 8,
-    height: 60,
+  ipDropdown: {
+    zIndex: 12,
+  },
+  portDropdown: {
+    zIndex: 11,
+  },
+  commandDropdown: {
+    zIndex: 10,
   },
   responseContainer: {
     flex: 2,

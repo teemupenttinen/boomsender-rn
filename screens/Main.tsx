@@ -5,36 +5,39 @@ import { useApp } from '../contexts/appContext'
 import { MainProps } from './Home'
 import { ListWithLabel } from '../components/ListWithLabel'
 import { colors } from '../styles/colors'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export const Main = ({ navigation }: MainProps) => {
   const { devices, removeDevice } = useApp()
 
   return (
-    <View style={styles.main}>
-      <ListWithLabel
-        label="Devices"
-        containerStyle={styles.list}
-        data={devices.map((d) => ({
-          value: d.id.toString(),
-          text: d.name,
-          onDelete: () => {
-            removeDevice(d.id)
-          },
-          onEdit: () => {
-            navigation.navigate('Device', { device: d })
-          },
-          onRowPress: () => {
-            navigation.navigate('Control', { device: d })
-          },
-        }))}
-        onAdd={() => navigation.navigate('Device', {})}
-      />
-      <View style={styles.middleLabel}>
-        <Text style={styles.middleLabelText}>
-          This space is reserved for your devices!
-        </Text>
+    <SafeAreaView>
+      <View style={styles.main}>
+        <ListWithLabel
+          label="Devices"
+          containerStyle={styles.list}
+          data={devices.map((d) => ({
+            value: d.id.toString(),
+            text: d.name,
+            onDelete: () => {
+              removeDevice(d.id)
+            },
+            onEdit: () => {
+              navigation.navigate('Device', { device: d })
+            },
+            onRowPress: () => {
+              navigation.navigate('Control', { device: d })
+            },
+          }))}
+          onAdd={() => navigation.navigate('Device', {})}
+        />
+        <View style={styles.middleLabel}>
+          <Text style={styles.middleLabelText}>
+            This space is reserved for your devices!
+          </Text>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
