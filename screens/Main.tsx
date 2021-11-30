@@ -19,7 +19,7 @@ export const Main = ({ navigation }: MainProps) => {
           label="Devices"
           containerStyle={styles.list}
           data={devices.map((d) => ({
-            value: d.id.toString(),
+            value: d.id,
             text: d.name,
             onDelete: () => {
               removeDevice(d.id)

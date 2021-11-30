@@ -13,15 +13,16 @@ import {
   Device as DeviceInterface,
 } from '../types/device'
 import { DeviceProps } from './Home'
+import uuid from 'react-native-uuid'
 
 const CONTROL_METHODS: ControlMethod[] = ['TCP', 'UDP']
 
 export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
-  const [id, setId] = useState<number | undefined>()
+  const [id, setId] = useState<string | undefined>()
   const [name, setName] = useState('')
   const [controlMethod, setControlMethod] = useState<ControlMethod>('TCP')
   const [commands, setCommands] = useState<Command[]>([])
-  const [port, setPort] = useState(10000)
+  const [port, setPort] = useState<string>('')
 
   useEffect(() => {
     if (route.params?.newCommand) {
@@ -41,11 +42,11 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
 
   const addNewDeviceHandler = () => {
     const newDevice: DeviceInterface = {
-      id: id ?? 0,
+      id: id ?? uuid.v4().toString(),
       name,
       controlMethod,
       commands,
-      port,
+      port: parseInt(port),
     }
 
     if (id) {
@@ -57,7 +58,7 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
     setName('')
     setControlMethod('TCP')
     setCommands([])
-    setPort(10000)
+    setPort('')
     navigation.navigate('Main')
   }
 
@@ -74,8 +75,8 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
         value={port.toString()}
         containerStyle={styles.portContainer}
         label="Port"
-        onChangeText={(text) => setPort(parseInt(text))}
-        keyboardType={'numeric'}
+        onChangeText={(text) => setPort(text)}
+        keyboardType={'number-pad'}
       />
       <ListWithLabel
         label="Commands"
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   },
   commandsList: {
     marginTop: 32,
-    maxHeight: 180
+    maxHeight: 180,
   },
   controlMethodText: {
     color: colors.white,

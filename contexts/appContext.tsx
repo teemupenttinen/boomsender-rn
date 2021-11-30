@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Command, Device } from '../types/device'
-import tcpSocket from 'net'
+import { Device } from '../types/device'
+import { getData, STORAGE_KEYS, storeData } from '../storage'
 
 interface AppContextValues {
   devices: Device[]
@@ -30,26 +30,34 @@ const AppContext = React.createContext<AppContextValues>({
 
 export const AppContextProvider: React.FC = ({ children }) => {
   const [devices, setDevices] = useState<Device[]>([])
-  const [ipAddresses, setIpAddreses] = useState<string[]>(['127.0.0.1'])
-  const [ports, setPorts] = useState<number[]>([8080, 1259])
+  const [ipAddresses, setIpAddreses] = useState<string[]>([])
+  const [ports, setPorts] = useState<number[]>([])
+
+  const readStorage = async () => {
+    const loadedDevices = await getData(STORAGE_KEYS.devices)
+    if (loadedDevices) {
+      setDevices(loadedDevices)
+    }
+
+    const loadedIpAddresses = await getData(STORAGE_KEYS.ipAddresses)
+    if (loadedIpAddresses) {
+      setIpAddreses(loadedIpAddresses)
+    }
+
+    const loadedPorts = await getData(STORAGE_KEYS.ports)
+    if (loadedPorts) {
+      setPorts(loadedPorts)
+    }
+  }
 
   useEffect(() => {
-    setDevices([
-      {
-        id: 1,
-        name: 'TV1',
-        controlMethod: 'TCP',
-        commands: [
-          { name: 'Power On', command: 'poweron\x0a' },
-          { name: 'Power Off', command: 'poweroff\x0a' },
-        ],
-        port: 1337,
-      },
-    ])
+    readStorage()
   }, [])
 
   const addNewDevice = (newDevice: Device) => {
-    setDevices([...devices, newDevice])
+    const newDevices = [...devices, newDevice]
+    setDevices(newDevices)
+    storeData(STORAGE_KEYS.devices, newDevices)
   }
 
   const editDevice = (newDevice: Device) => {
@@ -58,23 +66,42 @@ export const AppContextProvider: React.FC = ({ children }) => {
       newDevice,
     ]
     setDevices(newDevices)
+    storeData(STORAGE_KEYS.devices, newDevices)
   }
 
   const removeDevice = (id: Device['id']) => {
     const newDevices = devices.filter((d) => d.id !== id)
     setDevices(newDevices)
+    storeData(STORAGE_KEYS.devices, newDevices)
   }
 
-  const addIpAddress = (ip: string) =>
-    !ipAddresses.includes(ip) && setIpAddreses([...ipAddresses, ip])
+  const addIpAddress = (ip: string) => {
+    if (!ipAddresses.includes(ip)) {
+      const newIpAddresses = [...ipAddresses, ip]
+      setIpAddreses(newIpAddresses)
+      storeData(STORAGE_KEYS.ipAddresses, newIpAddresses)
+    }
+  }
 
-  const deleteIpAddress = (ip: string) =>
-    setIpAddreses(ipAddresses.filter((i) => i !== ip))
+  const deleteIpAddress = (ip: string) => {
+    const newIpAddresses = ipAddresses.filter((i) => i !== ip)
+    setIpAddreses(newIpAddresses)
+    storeData(STORAGE_KEYS.ipAddresses, newIpAddresses)
+  }
 
-  const addPort = (port: number) =>
-    !ports.includes(port) && setPorts([...ports, port])
+  const addPort = (port: number) => {
+    if (!ports.includes(port)) {
+      const newPorts = [...ports, port]
+      setPorts(newPorts)
+      storeData(STORAGE_KEYS.ports, newPorts)
+    }
+  }
 
-  const deletePort = (port: number) => setPorts(ports.filter((p) => p !== port))
+  const deletePort = (port: number) => {
+    const newPorts = ports.filter((p) => p !== port)
+    setPorts(newPorts)
+    storeData(STORAGE_KEYS.ports, newPorts)
+  }
 
   return (
     <AppContext.Provider

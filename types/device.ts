@@ -6,7 +6,7 @@ export interface Command {
 }
 
 export interface Device {
-  id: number
+  id: string
   name: string
   controlMethod: ControlMethod
   commands: Command[]
