@@ -6,13 +6,15 @@ import { MainProps } from './Home'
 import { ListWithLabel } from '../components/ListWithLabel'
 import { colors } from '../styles/colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { BaseScreen } from '../components/BaseScreen'
+
 
 export const Main = ({ navigation }: MainProps) => {
   const { devices, removeDevice } = useApp()
 
   return (
     <SafeAreaView>
-      <View style={styles.main}>
+      <BaseScreen>
         <ListWithLabel
           label="Devices"
           containerStyle={styles.list}
@@ -36,16 +38,12 @@ export const Main = ({ navigation }: MainProps) => {
             This space is reserved for your devices!
           </Text>
         </View>
-      </View>
+      </BaseScreen>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  main: {
-    padding: 8,
-    height: '100%',
-  },
   list: {
     paddingTop: 8,
   },
@@ -61,5 +59,5 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     zIndex: -1,
   },
-  middleLabelText: { color: colors.white, fontSize: 24 },
+  middleLabelText: { color: colors.white, fontSize: 24, textAlign: 'center' },
 })

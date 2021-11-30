@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
+import { BaseScreen } from '../components/BaseScreen'
 import { Button } from '../components/Button'
 import { ListWithLabel } from '../components/ListWithLabel'
 import { SegmentedControl } from '../components/SegmentedControl'
@@ -61,7 +62,7 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
   }
 
   return (
-    <View style={styles.device}>
+    <BaseScreen>
       <TextFieldWithLabel value={name} label="Name" onChangeText={setName} />
       <Text style={styles.controlMethodText}>Control method</Text>
       <SegmentedControl
@@ -95,15 +96,11 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
           onPress={addNewDeviceHandler}
         />
       </View>
-    </View>
+    </BaseScreen>
   )
 }
 
 const styles = StyleSheet.create({
-  device: {
-    padding: 16,
-    height: '100%',
-  },
   buttonContainer: {
     flex: 1,
     alignItems: 'center',
@@ -113,6 +110,7 @@ const styles = StyleSheet.create({
   },
   commandsList: {
     marginTop: 32,
+    maxHeight: 180
   },
   controlMethodText: {
     color: colors.white,

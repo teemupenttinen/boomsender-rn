@@ -6,6 +6,7 @@ import { colors } from '../styles/colors'
 import { ControlProps } from './Home'
 import DropDownPicker from 'react-native-dropdown-picker'
 import tcpSocket from 'react-native-tcp-socket'
+import { BaseScreen } from '../components/BaseScreen'
 
 export const Control: React.FC<ControlProps> = ({ route }) => {
   const [openIpDropdown, setOpenIpDropdown] = useState(false)
@@ -71,7 +72,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   }
 
   return (
-    <View style={styles.control}>
+    <BaseScreen>
       <View style={styles.ipDropdown}>
         <Text style={styles.label}>IP Address</Text>
         <DropDownPicker
@@ -128,15 +129,11 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
       <View style={styles.buttonContainer}>
         <Button title="Send" color={colors.button} onPress={sendCommand} />
       </View>
-    </View>
+    </BaseScreen>
   )
 }
 
 const styles = StyleSheet.create({
-  control: {
-    padding: 16,
-    height: '100%',
-  },
   label: {
     color: colors.white,
     fontSize: 24,
