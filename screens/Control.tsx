@@ -52,7 +52,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const sendCommand = () => {
     if (route.params?.device.controlMethod === 'TCP') {
       const sock = tcpSocket.createConnection(
-        { localAddress: 'localhost', port: port },
+        { localAddress: ipAddress, port: port },
         () => {
           if (sock) {
             sock.write(command)
