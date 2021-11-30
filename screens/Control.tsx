@@ -6,6 +6,7 @@ import { colors } from '../styles/colors'
 import { ControlProps } from './Home'
 import DropDownPicker from 'react-native-dropdown-picker'
 import tcpSocket from 'react-native-tcp-socket'
+import dgram from 'react-native-udp'
 import { BaseScreen } from '../components/BaseScreen'
 
 export const Control: React.FC<ControlProps> = ({ route }) => {
@@ -13,7 +14,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const [openPortDropdown, setOpenPortDropdown] = useState(false)
   const [openCommandDropdown, setOpenCommandDropdown] = useState(false)
   const [ipAddress, setIpAddress] = useState('')
-  const [port, setPort] = useState<number>(8080)
+  const [port, setPort] = useState<string>('')
   const [command, setCommand] = useState('')
   const [connAlive, setConnAlive] = useState(false)
 
@@ -42,7 +43,8 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.device) {
-      setPort(route.params.device.port)
+      setIpAddress(ipAddresses[0])
+      setPort(route.params.device.port.toString())
       setCommand(route.params.device.commands[0].command)
     }
   }, [route])
@@ -50,9 +52,9 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const device = route.params?.device
 
   const sendCommand = () => {
-    if (route.params?.device.controlMethod === 'TCP') {
+    if (device.controlMethod === 'TCP') {
       const sock = tcpSocket.createConnection(
-        { localAddress: ipAddress, port: port },
+        { localAddress: ipAddress, port: parseInt(port) },
         () => {
           if (sock) {
             sock.write(command)
@@ -60,15 +62,22 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
           }
         }
       )
+    } else {
+      const socket = dgram.createSocket({ type: 'udp4' })
+      socket.bind()
+      socket.once('listening', () => {
+        socket.send(
+          command,
+          undefined,
+          undefined,
+          parseInt(port),
+          ipAddress,
+          () => {
+            socket.close()
+          }
+        )
+      })
     }
-  }
-
-  if (!device) {
-    return (
-      <View>
-        <Text>No device found</Text>
-      </View>
-    )
   }
 
   return (
@@ -88,7 +97,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         <DropDownPicker
           open={openPortDropdown}
           value={port}
-          items={ports.map((p) => ({
+          items={[device.port, ...ports].map((p) => ({
             value: p.toString(),
             label: p.toString(),
           }))}
