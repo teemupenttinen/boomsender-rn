@@ -26,6 +26,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
       {options.map((option) => {
         return (
           <View
+            key={option.value}
             style={[styles.option, active === option.value && styles.active]}
           >
             <TouchableOpacity
@@ -69,6 +70,5 @@ const styles = StyleSheet.create({
   },
   text: {
     width: '100%',
-    flex: 1,
   },
 })

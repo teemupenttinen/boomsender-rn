@@ -7,6 +7,7 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu'
+import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../styles/colors'
 
 export interface RowItem {
@@ -28,18 +29,22 @@ export const RowItem: ListRenderItem<RowItem> = ({ item }) => (
     <Menu>
       <MenuTrigger>
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>?</Text>
+          <Ionicons
+            name={'ellipsis-horizontal'}
+            size={12}
+            color='black'
+          />
         </TouchableOpacity>
       </MenuTrigger>
       <MenuOptions optionsContainerStyle={styles.menuOptionsContainer}>
-        <MenuOption
+        {item.onEdit && <MenuOption
           style={styles.menuItemContainer}
           onSelect={item.onEdit}
           text="Edit"
-        />
-        <MenuOption style={styles.menuItemContainer} onSelect={item.onDelete}>
+        />}
+        {item.onDelete && <MenuOption style={styles.menuItemContainer} onSelect={item.onDelete}>
           <Text style={styles.menuItemContainerText}>Delete</Text>
-        </MenuOption>
+        </MenuOption>}
       </MenuOptions>
     </Menu>
   </View>
@@ -74,7 +79,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonText: { color: colors.black },
   menuItemContainer: {
     height: 50,
     borderBottomWidth: 1,

@@ -58,8 +58,17 @@ const AddScreen: React.FC<AddScreenProps> = ({ route, navigation }) => {
   )
 }
 
+const styles = StyleSheet.create({
+  buttonContainer: {
+    marginTop: 16,
+    alignItems: 'center',
+    alignContent: 'flex-end',
+    justifyContent: 'flex-end',
+  },
+})
+
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
-  const { ipAddresses, ports } = useApp()
+  const { ipAddresses, ports, deleteIpAddress, deletePort } = useApp()
 
   return (
     <View style={layout.viewPadding}>
@@ -68,6 +77,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
           return {
             text: ip,
             value: ip,
+            onDelete: () => {
+              deleteIpAddress(ip)
+            },
           }
         })}
         onAdd={() => navigation.navigate('AddScreen', { type: 'IP' })}
@@ -78,6 +90,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
         data={ports.map((port) => ({
           text: port.toString(),
           value: port.toString(),
+          onDelete: () => {
+            deletePort(port)
+          },
         }))}
         onAdd={() => navigation.navigate('AddScreen', { type: 'PORT' })}
         label="Ports"
@@ -119,17 +134,7 @@ const getHeaderTitle = (
       return 'Settings'
     }
     case 'AddScreen': {
-      return `Add ${route.params?.type === 'IP' ? 'IP address' : 'port'}`
+      return route.params?.type === 'IP' ? 'IP address' : 'Port'
     }
   }
 }
-
-const styles = StyleSheet.create({
-  buttonContainer: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: 16,
-    alignContent: 'flex-end',
-    justifyContent: 'flex-end',
-  },
-})
