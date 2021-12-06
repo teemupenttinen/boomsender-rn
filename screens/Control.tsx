@@ -17,6 +17,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const [port, setPort] = useState<string>('')
   const [command, setCommand] = useState('')
   const [connAlive, setConnAlive] = useState(false)
+  const [response, setResponse] = useState('')
 
   const { ipAddresses, ports } = useApp()
 
@@ -58,10 +59,17 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         () => {
           if (sock) {
             sock.write(command)
-            sock.destroy()
+            if(!connAlive) {
+              sock.destroy()
+            }
+            
           }
         }
       )
+      sock.on('data', (data) => {
+        setResponse(data.toString())
+        sock.destroy()
+      });
     } else {
       const socket = dgram.createSocket({ type: 'udp4' })
       socket.bind()
@@ -130,22 +138,25 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
           setValue={setCommand}
         />
       </View>
-      <Text style={[styles.label, styles.gap]}>Response</Text>
-      <View style={styles.responseContainer}>
-        <Text>power\x0a</Text>
-      </View>
       {device.controlMethod === 'TCP' && (
-        <View style={styles.connectionStateContainer}>
-          <Text style={[styles.label, styles.connectionLabel]}>
-            Keep connection alive
-          </Text>
-          <Switch
-            trackColor={{ true: '#34C759', false: '#fafafa' }}
-            style={styles.switch}
-            value={connAlive}
-            onValueChange={setConnAlive}
-          />
-        </View>
+        <>
+          <Text style={[styles.label, styles.gap]}>Response</Text>
+          <View style={styles.responseContainer}>
+            <Text>{response}</Text>
+          </View>
+
+          <View style={styles.connectionStateContainer}>
+            <Text style={[styles.label, styles.connectionLabel]}>
+              Wait for response
+            </Text>
+            <Switch
+              trackColor={{ true: '#34C759', false: '#fafafa' }}
+              style={styles.switch}
+              value={connAlive}
+              onValueChange={setConnAlive}
+            />
+          </View>
+        </>
       )}
       <View style={styles.buttonContainer}>
         <Button title="Send" color={colors.button} onPress={sendCommand} />
