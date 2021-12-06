@@ -64,7 +64,7 @@ const getHeaderTitle = (
 ) => {
   switch (route.name) {
     case 'Device': {
-      return 'New device'
+      return route.params?.device ? 'Edit device' : 'New device' 
     }
     case 'Command': {
       return 'Add command'

@@ -75,10 +75,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
       <ListWithLabel
         data={ipAddresses.map((ip) => {
           return {
-            text: ip,
-            value: ip,
+            text: ip.ipAddress,
+            value: ip.id,
             onDelete: () => {
-              deleteIpAddress(ip)
+              deleteIpAddress(ip.id)
             },
           }
         })}
@@ -88,10 +88,10 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
       <ListWithLabel
         containerStyle={layout.gap}
         data={ports.map((port) => ({
-          text: port.toString(),
-          value: port.toString(),
+          text: port.port.toString(),
+          value: port.port.toString(),
           onDelete: () => {
-            deletePort(port)
+            deletePort(port.id)
           },
         }))}
         onAdd={() => navigation.navigate('AddScreen', { type: 'PORT' })}
