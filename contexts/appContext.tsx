@@ -1,18 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Device } from '../types/device'
-import { getData, STORAGE_KEYS, storeData } from '../storage'
+import { Device, IPAddress, OmitID, Port } from '../types/device'
+import { useFirebase } from './firebaseContext'
 
 interface AppContextValues {
   devices: Device[]
-  ipAddresses: string[]
-  ports: number[]
-  addNewDevice: (newDevice: Device) => void
+  ipAddresses: IPAddress[]
+  ports: Port[]
+  addNewDevice: (newDevice: OmitID<Device>) => void
   removeDevice: (id: Device['id']) => void
   editDevice: (newDevice: Device) => void
   addIpAddress: (ip: string) => void
-  deleteIpAddress: (ip: string) => void
+  deleteIpAddress: (ip: IPAddress['id']) => void
   addPort: (port: number) => void
-  deletePort: (port: number) => void
+  deletePort: (port: Port['id']) => void
 }
 
 const AppContext = React.createContext<AppContextValues>({
@@ -28,36 +28,62 @@ const AppContext = React.createContext<AppContextValues>({
   deletePort: () => {},
 })
 
+type FirebaseStorage = {
+  devices: Record<string, OmitID<Device>>
+  ipAddresses: Record<string, string>
+  ports: Record<string, number>
+}
+
 export const AppContextProvider: React.FC = ({ children }) => {
   const [devices, setDevices] = useState<Device[]>([])
-  const [ipAddresses, setIpAddreses] = useState<string[]>([])
-  const [ports, setPorts] = useState<number[]>([])
+  const [ipAddresses, setIpAddreses] = useState<IPAddress[]>([])
+  const [ports, setPorts] = useState<Port[]>([])
 
-  const readStorage = async () => {
-    const loadedDevices = await getData(STORAGE_KEYS.devices)
-    if (loadedDevices) {
+  const { getData, addItem, updateItem, deleteItem, user } = useFirebase()
+
+  const readFirebase = async () => {
+    const data = (await getData()) as FirebaseStorage
+    if (data.devices) {
+      const loadedDevices = Object.keys(data.devices).map((id) => {
+        return {
+          ...data.devices[id],
+          id,
+        }
+      })
       setDevices(loadedDevices)
     }
 
-    const loadedIpAddresses = await getData(STORAGE_KEYS.ipAddresses)
-    if (loadedIpAddresses) {
+    if (data.ipAddresses) {
+      const loadedIpAddresses = Object.keys(data.ipAddresses).map((id) => {
+        return {
+          ipAddress: data.ipAddresses[id],
+          id,
+        }
+      })
       setIpAddreses(loadedIpAddresses)
     }
 
-    const loadedPorts = await getData(STORAGE_KEYS.ports)
-    if (loadedPorts) {
+    if (data.ports) {
+      const loadedPorts = Object.keys(data.ports).map((id) => {
+        return {
+          port: data.ports[id],
+          id,
+        }
+      })
       setPorts(loadedPorts)
     }
   }
 
   useEffect(() => {
-    readStorage()
-  }, [])
+    if (user) {
+      readFirebase()
+    }
+  }, [user])
 
-  const addNewDevice = (newDevice: Device) => {
-    const newDevices = [...devices, newDevice]
+  const addNewDevice = async (newDevice: OmitID<Device>) => {
+    const newDeviceId = await addItem('devices', newDevice)
+    const newDevices = [...devices, { id: newDeviceId, ...newDevice }]
     setDevices(newDevices)
-    storeData(STORAGE_KEYS.devices, newDevices)
   }
 
   const editDevice = (newDevice: Device) => {
@@ -66,41 +92,44 @@ export const AppContextProvider: React.FC = ({ children }) => {
       newDevice,
     ]
     setDevices(newDevices)
-    storeData(STORAGE_KEYS.devices, newDevices)
+    updateItem('devices', newDevice.id, newDevice)
   }
 
   const removeDevice = (id: Device['id']) => {
     const newDevices = devices.filter((d) => d.id !== id)
     setDevices(newDevices)
-    storeData(STORAGE_KEYS.devices, newDevices)
+    deleteItem('devices', id)
   }
 
-  const addIpAddress = (ip: string) => {
-    if (!ipAddresses.includes(ip)) {
-      const newIpAddresses = [...ipAddresses, ip]
+  const addIpAddress = async (newIp: string) => {
+    if (!ipAddresses.find((ip) => ip.ipAddress === newIp)) {
+      const createdId = await addItem('ipAddresses', newIp)
+      const newIpAddresses = [
+        ...ipAddresses,
+        { id: createdId, ipAddress: newIp },
+      ]
       setIpAddreses(newIpAddresses)
-      storeData(STORAGE_KEYS.ipAddresses, newIpAddresses)
     }
   }
 
-  const deleteIpAddress = (ip: string) => {
-    const newIpAddresses = ipAddresses.filter((i) => i !== ip)
+  const deleteIpAddress = (id: IPAddress['id']) => {
+    const newIpAddresses = ipAddresses.filter((ip) => ip.id !== id)
     setIpAddreses(newIpAddresses)
-    storeData(STORAGE_KEYS.ipAddresses, newIpAddresses)
+    deleteItem('ipAddresses', id)
   }
 
-  const addPort = (port: number) => {
-    if (!ports.includes(port)) {
-      const newPorts = [...ports, port]
+  const addPort = async (newPort: number) => {
+    if (!ports.find((port) => port.port === newPort)) {
+      const createdId = await addItem('ports', newPort)
+      const newPorts = [...ports, { id: createdId, port: newPort }]
       setPorts(newPorts)
-      storeData(STORAGE_KEYS.ports, newPorts)
     }
   }
 
-  const deletePort = (port: number) => {
-    const newPorts = ports.filter((p) => p !== port)
+  const deletePort = (id: Port['id']) => {
+    const newPorts = ports.filter((port) => port.id !== id)
     setPorts(newPorts)
-    storeData(STORAGE_KEYS.ports, newPorts)
+    deleteItem('ports', id)
   }
 
   return (

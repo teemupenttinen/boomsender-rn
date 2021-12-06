@@ -10,10 +10,10 @@ import { colors } from '../styles/colors'
 import {
   Command,
   ControlMethod,
-  Device as DeviceInterface,
+  OmitID,
+  Device as DeviceInterface
 } from '../types/device'
 import { DeviceProps } from './Home'
-import uuid from 'react-native-uuid'
 
 const CONTROL_METHODS: ControlMethod[] = ['TCP', 'UDP']
 
@@ -41,8 +41,7 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
   const { addNewDevice, editDevice } = useApp()
 
   const addNewDeviceHandler = () => {
-    const newDevice: DeviceInterface = {
-      id: id ?? uuid.v4().toString(),
+    const device: OmitID<DeviceInterface> = {
       name,
       controlMethod,
       commands,
@@ -50,9 +49,12 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
     }
 
     if (id) {
-      editDevice(newDevice)
+      editDevice({
+        id,
+        ...device
+      })
     } else {
-      addNewDevice(newDevice)
+      addNewDevice(device)
     }
     setId(undefined)
     setName('')

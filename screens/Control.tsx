@@ -43,7 +43,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.device) {
-      setIpAddress(ipAddresses[0])
+      setIpAddress(ipAddresses[0].ipAddress)
       setPort(route.params.device.port.toString())
       setCommand(route.params.device.commands[0].command)
     }
@@ -80,6 +80,18 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
     }
   }
 
+  const portsArr = [
+    ...ports.map((p) => ({
+      value: p.port.toString(),
+      label: p.port.toString(),
+    })),
+  ]
+  if (!ports.find((p) => p.port === device.port)) {
+    portsArr.push({
+      value: device.port.toString(),
+      label: device.port.toString(),
+    })
+  }
   return (
     <BaseScreen>
       <View style={styles.ipDropdown}>
@@ -87,7 +99,10 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         <DropDownPicker
           open={openIpDropdown}
           value={ipAddress}
-          items={ipAddresses.map((ip) => ({ value: ip, label: ip }))}
+          items={ipAddresses.map((ip) => ({
+            value: ip.ipAddress,
+            label: ip.ipAddress,
+          }))}
           setOpen={setOpenIpDropdown}
           setValue={setIpAddress}
         />
@@ -97,10 +112,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         <DropDownPicker
           open={openPortDropdown}
           value={port}
-          items={[device.port, ...ports].map((p) => ({
-            value: p.toString(),
-            label: p.toString(),
-          }))}
+          items={portsArr}
           setOpen={setOpenPortDropdown}
           setValue={setPort}
         />

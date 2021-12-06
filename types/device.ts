@@ -12,3 +12,15 @@ export interface Device {
   commands: Command[]
   port: number
 }
+
+export interface IPAddress {
+  id: string,
+  ipAddress: string
+}
+
+export interface Port {
+  id: string,
+  port: number
+}
+
+export type OmitID<T> = Omit<T, 'id'>
