@@ -59,17 +59,16 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         () => {
           if (sock) {
             sock.write(command)
-            if(!connAlive) {
+            if (!connAlive) {
               sock.destroy()
             }
-            
           }
         }
       )
       sock.on('data', (data) => {
         setResponse(data.toString())
         sock.destroy()
-      });
+      })
     } else {
       const socket = dgram.createSocket({ type: 'udp4' })
       socket.bind()
@@ -102,42 +101,39 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   }
   return (
     <BaseScreen>
-      <View style={styles.ipDropdown}>
-        <Text style={styles.label}>IP Address</Text>
-        <DropDownPicker
-          open={openIpDropdown}
-          value={ipAddress}
-          items={ipAddresses.map((ip) => ({
-            value: ip.ipAddress,
-            label: ip.ipAddress,
-          }))}
-          setOpen={setOpenIpDropdown}
-          setValue={setIpAddress}
-        />
-      </View>
-      <View style={styles.portDropdown}>
-        <Text style={[styles.label, styles.gap]}>Port</Text>
-        <DropDownPicker
-          open={openPortDropdown}
-          value={port}
-          items={portsArr}
-          setOpen={setOpenPortDropdown}
-          setValue={setPort}
-        />
-      </View>
-      <View style={styles.commandDropdown}>
-        <Text style={[styles.label, styles.gap]}>Command</Text>
-        <DropDownPicker
-          open={openCommandDropdown}
-          value={command}
-          items={device.commands.map((c) => ({
-            value: c.command,
-            label: c.name,
-          }))}
-          setOpen={setOpenCommandDropdown}
-          setValue={setCommand}
-        />
-      </View>
+      <Text style={styles.label}>IP Address</Text>
+      <DropDownPicker
+        open={openIpDropdown}
+        value={ipAddress}
+        items={ipAddresses.map((ip) => ({
+          value: ip.ipAddress,
+          label: ip.ipAddress,
+        }))}
+        setOpen={setOpenIpDropdown}
+        setValue={setIpAddress}
+        zIndex={3}
+      />
+      <Text style={[styles.label, styles.gap]}>Port</Text>
+      <DropDownPicker
+        open={openPortDropdown}
+        value={port}
+        items={portsArr}
+        setOpen={setOpenPortDropdown}
+        setValue={setPort}
+        zIndex={2}
+      />
+      <Text style={[styles.label, styles.gap]}>Command</Text>
+      <DropDownPicker
+        open={openCommandDropdown}
+        value={command}
+        items={device.commands.map((c) => ({
+          value: c.command,
+          label: c.name,
+        }))}
+        setOpen={setOpenCommandDropdown}
+        setValue={setCommand}
+        zIndex={1}
+      />
       {device.controlMethod === 'TCP' && (
         <>
           <Text style={[styles.label, styles.gap]}>Response</Text>
@@ -173,15 +169,6 @@ const styles = StyleSheet.create({
   },
   gap: {
     marginTop: 16,
-  },
-  ipDropdown: {
-    zIndex: 12,
-  },
-  portDropdown: {
-    zIndex: 11,
-  },
-  commandDropdown: {
-    zIndex: 10,
   },
   responseContainer: {
     flex: 2,
