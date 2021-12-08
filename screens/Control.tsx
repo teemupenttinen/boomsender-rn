@@ -44,7 +44,9 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.device) {
-      setIpAddress(ipAddresses[0].ipAddress)
+      if (ipAddresses.length > 0) {
+        setIpAddress(ipAddresses[0].ipAddress)
+      }
       setPort(route.params.device.port.toString())
       setCommand(route.params.device.commands[0].command)
     }
