@@ -5,9 +5,10 @@ import { useApp } from '../contexts/appContext'
 import { colors } from '../styles/colors'
 import { ControlProps } from './Home'
 import DropDownPicker from 'react-native-dropdown-picker'
-import tcpSocket from 'react-native-tcp-socket'
 import dgram from 'react-native-udp'
 import { BaseScreen } from '../components/BaseScreen'
+import Constants from 'expo-constants'
+import tcp from '../tcp'
 
 export const Control: React.FC<ControlProps> = ({ route }) => {
   const [openIpDropdown, setOpenIpDropdown] = useState(false)
@@ -16,7 +17,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const [ipAddress, setIpAddress] = useState('')
   const [port, setPort] = useState<string>('')
   const [command, setCommand] = useState('')
-  const [connAlive, setConnAlive] = useState(false)
+  const [waitForResponse, setConnAlive] = useState(false)
   const [response, setResponse] = useState('')
 
   const { ipAddresses, ports } = useApp()
@@ -55,22 +56,23 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const device = route.params?.device
 
   const sendCommand = () => {
+    setResponse('')
     if (device.controlMethod === 'TCP') {
-      const sock = tcpSocket.createConnection(
+      const sock = tcp.createConnection(
         { localAddress: ipAddress, port: parseInt(port) },
         () => {
-          if (sock) {
-            sock.write(command)
-            if (!connAlive) {
-              sock.destroy()
-            }
+          sock.write(command)
+          if (!waitForResponse) {
+            sock.destroy()
           }
         }
       )
-      sock.on('data', (data) => {
-        setResponse(data.toString())
-        sock.destroy()
-      })
+      if (waitForResponse) {
+        sock.on('data', (data: any) => {
+          setResponse(data.toString())
+          sock.destroy()
+        })
+      }
     } else {
       const socket = dgram.createSocket({ type: 'udp4' })
       socket.bind()
@@ -103,6 +105,11 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   }
   return (
     <BaseScreen>
+      {Constants.appOwnership === 'expo' && device.controlMethod === 'TCP' && (
+        <Text style={styles.mockWarning}>
+          You are running the app with Expo Go. TCP client will be mocked
+        </Text>
+      )}
       <Text style={styles.label}>IP Address</Text>
       <DropDownPicker
         open={openIpDropdown}
@@ -150,7 +157,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
             <Switch
               trackColor={{ true: '#34C759', false: '#fafafa' }}
               style={styles.switch}
-              value={connAlive}
+              value={waitForResponse}
               onValueChange={setConnAlive}
             />
           </View>
@@ -164,6 +171,9 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
 }
 
 const styles = StyleSheet.create({
+  mockWarning: {
+    color: colors.red,
+  },
   label: {
     color: colors.white,
     fontSize: 24,
