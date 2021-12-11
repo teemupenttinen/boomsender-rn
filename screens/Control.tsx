@@ -5,10 +5,9 @@ import { useApp } from '../contexts/appContext'
 import { colors } from '../styles/colors'
 import { ControlProps } from './Home'
 import DropDownPicker from 'react-native-dropdown-picker'
-import dgram from 'react-native-udp'
 import { BaseScreen } from '../components/BaseScreen'
 import Constants from 'expo-constants'
-import tcp from '../tcp'
+import socket from '../socket'
 
 export const Control: React.FC<ControlProps> = ({ route }) => {
   const [openIpDropdown, setOpenIpDropdown] = useState(false)
@@ -49,7 +48,9 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         setIpAddress(ipAddresses[0].ipAddress)
       }
       setPort(route.params.device.port.toString())
-      setCommand(route.params.device.commands[0].command)
+      if (route.params.device.commands) {
+        setCommand(route.params.device.commands[0].command)
+      }
     }
   }, [route])
 
@@ -58,7 +59,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const sendCommand = () => {
     setResponse('')
     if (device.controlMethod === 'TCP') {
-      const client = new tcp.Socket()
+      const client = new socket.tcp.Socket()
       client.connect({ host: ipAddress, port: parseInt(port) }, () => {
         client.write(command)
         if (!waitForResponse) {
@@ -72,20 +73,20 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
         })
       }
     } else {
-      const socket = dgram.createSocket({ type: 'udp4' })
-      socket.bind()
-      socket.once('listening', () => {
-        socket.send(
+      const client = socket.udp.createSocket({ type: 'udp4' })
+      client.once('listening', () => {
+        client.send(
           command,
           undefined,
           undefined,
           parseInt(port),
           ipAddress,
           () => {
-            socket.close()
+            client.close()
           }
         )
       })
+      client.bind()
     }
   }
 
@@ -103,12 +104,11 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   }
   return (
     <BaseScreen>
-      {Constants.appOwnership === 'expo' &&
-        device.controlMethod === 'TCP' && (
-          <Text style={styles.mockWarning}>
-            You are running the app with Expo Go. TCP client will be mocked
-          </Text>
-        )}
+      {Constants.appOwnership === 'expo' && (
+        <Text style={styles.mockWarning}>
+          {`You are running the app with Expo Go. ${device.controlMethod} client will be mocked`}
+        </Text>
+      )}
       <Text style={styles.label}>IP Address</Text>
       <DropDownPicker
         open={openIpDropdown}
@@ -134,7 +134,7 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
       <DropDownPicker
         open={openCommandDropdown}
         value={command}
-        items={device.commands.map((c) => ({
+        items={device.commands?.map((c) => ({
           value: c.command,
           label: c.name,
         }))}

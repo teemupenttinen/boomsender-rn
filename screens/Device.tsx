@@ -11,7 +11,7 @@ import {
   Command,
   ControlMethod,
   OmitID,
-  Device as DeviceInterface
+  Device as DeviceInterface,
 } from '../types/device'
 import { DeviceProps } from './Home'
 
@@ -34,7 +34,10 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
       setId(device.id)
       setName(device.name)
       setControlMethod(device.controlMethod)
-      setCommands(device.commands)
+      setPort(device.port.toString())
+      if (device.commands) {
+        setCommands(device.commands)
+      }
     }
   }, [route])
 
@@ -51,7 +54,7 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
     if (id) {
       editDevice({
         id,
-        ...device
+        ...device,
       })
     } else {
       addNewDevice(device)
