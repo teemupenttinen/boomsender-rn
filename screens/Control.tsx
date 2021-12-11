@@ -58,19 +58,17 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   const sendCommand = () => {
     setResponse('')
     if (device.controlMethod === 'TCP') {
-      const sock = tcp.createConnection(
-        { localAddress: ipAddress, port: parseInt(port) },
-        () => {
-          sock.write(command)
-          if (!waitForResponse) {
-            sock.destroy()
-          }
+      const client = new tcp.Socket()
+      client.connect({ host: ipAddress, port: parseInt(port) }, () => {
+        client.write(command)
+        if (!waitForResponse) {
+          client.destroy()
         }
-      )
+      })
       if (waitForResponse) {
-        sock.on('data', (data: any) => {
+        client.on('data', (data: any) => {
           setResponse(data.toString())
-          sock.destroy()
+          client.destroy()
         })
       }
     } else {
@@ -105,11 +103,12 @@ export const Control: React.FC<ControlProps> = ({ route }) => {
   }
   return (
     <BaseScreen>
-      {Constants.appOwnership === 'expo' && device.controlMethod === 'TCP' && (
-        <Text style={styles.mockWarning}>
-          You are running the app with Expo Go. TCP client will be mocked
-        </Text>
-      )}
+      {Constants.appOwnership === 'expo' &&
+        device.controlMethod === 'TCP' && (
+          <Text style={styles.mockWarning}>
+            You are running the app with Expo Go. TCP client will be mocked
+          </Text>
+        )}
       <Text style={styles.label}>IP Address</Text>
       <DropDownPicker
         open={openIpDropdown}

@@ -34,10 +34,7 @@ export class MockClient {
 }
 
 const mockTcp = {
-  createConnection: (options: any, callback: () => void): MockClient => {
-    const client = new MockClient()
-    return client.connect(options, callback)
-  },
+  Socket: MockClient
 }
 
 const tcp =
