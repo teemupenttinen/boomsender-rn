@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Device, IPAddress, OmitID, Port } from '../types/device'
-import { useFirebase } from './firebaseContext'
+import * as Linking from 'expo-linking'
+import { DEEPLINK_PREFIX, useFirebase } from './firebaseContext'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
+import { HomeStackParamList } from '../screens/Home'
+import Clipboard from '@react-native-clipboard/clipboard';
+
 
 interface AppContextValues {
   devices: Device[]
@@ -13,6 +18,7 @@ interface AppContextValues {
   deleteIpAddress: (ip: IPAddress['id']) => void
   addPort: (port: number) => void
   deletePort: (port: Port['id']) => void
+  shareDevice: (device: OmitID<Device>) => void
 }
 
 const AppContext = React.createContext<AppContextValues>({
@@ -26,6 +32,7 @@ const AppContext = React.createContext<AppContextValues>({
   deleteIpAddress: () => {},
   addPort: () => {},
   deletePort: () => {},
+  shareDevice: () => {},
 })
 
 type FirebaseStorage = {
@@ -39,7 +46,9 @@ export const AppContextProvider: React.FC = ({ children }) => {
   const [ipAddresses, setIpAddreses] = useState<IPAddress[]>([])
   const [ports, setPorts] = useState<Port[]>([])
 
-  const { getData, addItem, updateItem, deleteItem, user } = useFirebase()
+  const { getData, addItem, updateItem, deleteItem, user, createDynamicLink } =
+    useFirebase()
+  const navigation = useNavigation<NavigationProp<HomeStackParamList>>()
 
   const readFirebase = async () => {
     const data = (await getData()) as FirebaseStorage
@@ -132,6 +141,33 @@ export const AppContextProvider: React.FC = ({ children }) => {
     deleteItem('ports', id)
   }
 
+  const shareDevice = async (device: OmitID<Device>) => {
+    const link = Linking.createURL('/device', {
+      queryParams: { device: JSON.stringify(device) },
+    })
+    const shortUrl = await createDynamicLink(link)
+    Clipboard.setString(shortUrl.shortLink);
+  }
+
+  const handleDeeplink = (url: string) => {
+    const parsedUrl = Linking.parse(
+      decodeURIComponent(url.replace(DEEPLINK_PREFIX, ''))
+    )
+    const parsedDevice = JSON.parse(parsedUrl.queryParams.device)
+    navigation.navigate('Device', { device: parsedDevice })
+  }
+
+  useEffect(() => {
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleDeeplink(url)
+      }
+    })
+    Linking.addEventListener('url', (event) => {
+      handleDeeplink(event.url)
+    })
+  }, [])
+
   return (
     <AppContext.Provider
       value={{
@@ -145,6 +181,7 @@ export const AppContextProvider: React.FC = ({ children }) => {
         deleteIpAddress,
         addPort,
         deletePort,
+        shareDevice,
       }}
     >
       {children}

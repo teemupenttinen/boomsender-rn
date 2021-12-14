@@ -12,7 +12,7 @@ import {
 import { RouteProp } from '@react-navigation/native'
 import { Control } from './Control'
 
-type HomeStackParamList = {
+export type HomeStackParamList = {
   Main: undefined
   Device: {
     newCommand?: CommandInterface

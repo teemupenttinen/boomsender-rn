@@ -12,12 +12,11 @@ import { FirebaseContextProvider } from './contexts/firebaseContext'
 const Tab = createBottomTabNavigator()
 
 export default function App() {
-
   return (
     <MenuProvider>
-      <FirebaseContextProvider>
-        <AppContextProvider>
-          <NavigationContainer theme={defaultTheme}>
+      <NavigationContainer theme={defaultTheme}>
+        <FirebaseContextProvider>
+          <AppContextProvider>
             <Tab.Navigator
               screenOptions={({ route }) => ({
                 headerShown: false,
@@ -38,9 +37,9 @@ export default function App() {
               <Tab.Screen name="Home" component={Home} />
               <Tab.Screen name="Settings" component={Settings} />
             </Tab.Navigator>
-          </NavigationContainer>
-        </AppContextProvider>
-      </FirebaseContextProvider>
+          </AppContextProvider>
+        </FirebaseContextProvider>
+      </NavigationContainer>
     </MenuProvider>
   )
 }

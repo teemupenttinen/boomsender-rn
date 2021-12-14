@@ -16,6 +16,7 @@ export interface RowItem {
   onDelete?: () => void
   onEdit?: () => void
   onRowPress?: () => void
+  onShare?: () => void
 }
 
 export const RowItem: ListRenderItem<RowItem> = ({ item }) => (
@@ -44,6 +45,9 @@ export const RowItem: ListRenderItem<RowItem> = ({ item }) => (
         />}
         {item.onDelete && <MenuOption style={styles.menuItemContainer} onSelect={item.onDelete}>
           <Text style={styles.menuItemContainerText}>Delete</Text>
+        </MenuOption>}
+        {item.onShare && <MenuOption style={styles.menuItemContainer} onSelect={item.onShare}>
+          <Text style={styles.shareItemText}>Share</Text>
         </MenuOption>}
       </MenuOptions>
     </Menu>
@@ -88,6 +92,9 @@ const styles = StyleSheet.create({
   },
   menuItemContainerText: {
     color: colors.red,
+  },
+  shareItemText: {
+    color: colors.black
   },
   menuOptionsContainer: { borderRadius: 8 },
 })
