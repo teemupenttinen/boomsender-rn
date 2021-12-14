@@ -4,8 +4,15 @@ import * as Linking from 'expo-linking'
 import { DEEPLINK_PREFIX, useFirebase } from './firebaseContext'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { HomeStackParamList } from '../screens/Home'
-import Clipboard from '@react-native-clipboard/clipboard'
 import Toast from 'react-native-toast-message'
+import Constants from 'expo-constants'
+
+const Clipboard =
+  Constants.appOwnership === 'expo'
+    ? require('expo-clipboard')
+    : require('@react-native-clipboard/clipboard')
+    
+console.log(Clipboard)
 
 interface AppContextValues {
   devices: Device[]
