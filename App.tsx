@@ -8,6 +8,7 @@ import { Settings } from './screens/Settings'
 import { AppContextProvider } from './contexts/appContext'
 import { defaultTheme } from './styles/colors'
 import { FirebaseContextProvider } from './contexts/firebaseContext'
+import Toast from 'react-native-toast-message'
 
 const Tab = createBottomTabNavigator()
 
@@ -40,6 +41,7 @@ export default function App() {
           </AppContextProvider>
         </FirebaseContextProvider>
       </NavigationContainer>
+      <Toast />
     </MenuProvider>
   )
 }

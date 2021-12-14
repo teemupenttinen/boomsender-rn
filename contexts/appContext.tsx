@@ -4,8 +4,8 @@ import * as Linking from 'expo-linking'
 import { DEEPLINK_PREFIX, useFirebase } from './firebaseContext'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { HomeStackParamList } from '../screens/Home'
-import Clipboard from '@react-native-clipboard/clipboard';
-
+import Clipboard from '@react-native-clipboard/clipboard'
+import Toast from 'react-native-toast-message'
 
 interface AppContextValues {
   devices: Device[]
@@ -146,7 +146,11 @@ export const AppContextProvider: React.FC = ({ children }) => {
       queryParams: { device: JSON.stringify(device) },
     })
     const shortUrl = await createDynamicLink(link)
-    Clipboard.setString(shortUrl.shortLink);
+    Clipboard.setString(shortUrl.shortLink)
+    Toast.show({
+      type: 'info',
+      text1: `Link to ${device.name} copied`,
+    })
   }
 
   const handleDeeplink = (url: string) => {
