@@ -43,11 +43,11 @@ export const RowItem: ListRenderItem<RowItem> = ({ item }) => (
           onSelect={item.onEdit}
           text="Edit"
         />}
-        {item.onDelete && <MenuOption style={styles.menuItemContainer} onSelect={item.onDelete}>
-          <Text style={styles.menuItemContainerText}>Delete</Text>
-        </MenuOption>}
         {item.onShare && <MenuOption style={styles.menuItemContainer} onSelect={item.onShare}>
           <Text style={styles.shareItemText}>Share</Text>
+        </MenuOption>}
+        {item.onDelete && <MenuOption style={styles.menuItemContainer} onSelect={item.onDelete}>
+          <Text style={styles.menuItemContainerText}>Delete</Text>
         </MenuOption>}
       </MenuOptions>
     </Menu>
