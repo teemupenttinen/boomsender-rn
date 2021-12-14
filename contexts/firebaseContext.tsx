@@ -32,7 +32,10 @@ interface FirebaseContextValues {
   addItem: (key: string, value: any) => Promise<string>
   updateItem: (key: string, id: string, value: any) => void
   deleteItem: (key: string, id: string) => void
+  createDynamicLink: (url: string) => Promise<{shortLink: string}>
 }
+
+export const DEEPLINK_PREFIX = 'https://teemupenttinen.com/?link='
 
 const FirebaseContext = React.createContext<FirebaseContextValues>({
   user: undefined,
@@ -40,6 +43,7 @@ const FirebaseContext = React.createContext<FirebaseContextValues>({
   addItem: async () => '',
   updateItem: async () => '',
   deleteItem: async () => {},
+  createDynamicLink: async () => ({shortLink: ''}),
 })
 
 const app = initializeApp(firebaseConfig)
@@ -55,7 +59,6 @@ export const FirebaseContextProvider: React.FC = ({ children }) => {
       onAuthStateChanged(auth, (fbUser) => {
         if (fbUser && !user) {
           setUser(fbUser)
-          console.log(fbUser)
         } else {
           setUser(undefined)
         }
@@ -98,6 +101,35 @@ export const FirebaseContextProvider: React.FC = ({ children }) => {
     remove(ref(database, `${user?.uid}/${key}/${id}`))
   }
 
+  const createDynamicLink = async (
+    url: string
+  ): Promise<{ shortLink: string }> => {
+    const body = {
+      dynamicLinkInfo: {
+        domainUriPrefix: 'https://boomsender.page.link',
+        link: DEEPLINK_PREFIX + url,
+        androidInfo: {
+          androidPackageName: 'com.teemupenttinen.boomsenderrn',
+        },
+        iosInfo: {
+          iosBundleId: 'com.teemupenttinen.boomsenderrn',
+        },
+      },
+    }
+    const rawResponse = await fetch(
+      `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${firebaseConfig.apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }
+    )
+    return await rawResponse.json()
+  }
+
   return (
     <FirebaseContext.Provider
       value={{
@@ -106,6 +138,7 @@ export const FirebaseContextProvider: React.FC = ({ children }) => {
         addItem,
         updateItem,
         deleteItem,
+        createDynamicLink,
       }}
     >
       {children}

@@ -8,9 +8,8 @@ import { colors } from '../styles/colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { BaseScreen } from '../components/BaseScreen'
 
-
 export const Main = ({ navigation }: MainProps) => {
-  const { devices, removeDevice } = useApp()
+  const { devices, removeDevice, shareDevice } = useApp()
 
   return (
     <SafeAreaView>
@@ -29,6 +28,10 @@ export const Main = ({ navigation }: MainProps) => {
             },
             onRowPress: () => {
               navigation.navigate('Control', { device: d })
+            },
+            onShare: () => {
+              const { id, ...device } = d
+              shareDevice(device)
             },
           }))}
           onAdd={() => navigation.navigate('Device', {})}

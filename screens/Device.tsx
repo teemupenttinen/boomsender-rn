@@ -31,12 +31,14 @@ export const Device: React.FC<DeviceProps> = ({ navigation, route }) => {
 
     if (route.params?.device) {
       const device = route.params.device
-      setId(device.id)
       setName(device.name)
       setControlMethod(device.controlMethod)
       setPort(device.port.toString())
       if (device.commands) {
         setCommands(device.commands)
+      }
+      if (device.id) {
+        setId(device.id)
       }
     }
   }, [route])
